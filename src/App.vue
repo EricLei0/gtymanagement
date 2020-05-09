@@ -4,4 +4,8 @@
   </div>
 </template>
 
-<style lang="less"></style>
+<style lang="less" scoped>
+#app {
+  height: 100%;
+}
+</style>
