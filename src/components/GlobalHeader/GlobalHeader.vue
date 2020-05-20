@@ -6,16 +6,26 @@
       @click="toggle"
     />
     <div class="user-wraper">
-      <span class="exit-button">
+      <div class="user-avator">
+        <a-avatar
+          size="large"
+          :style="{ verticalAlign: 'middle', backgroundColor: color }"
+        >
+          {{ avatorValue }}
+        </a-avatar>
+      </div>
+      <div class="exit-button">
         <a-button type="primary" @click="logout">
           <a-icon type="poweroff" />退 出
         </a-button>
-      </span>
+      </div>
     </div>
   </a-layout-header>
 </template>
 
 <script>
+const colorList = ["#f56a00", "#7265e6", "#ffbf00", "#00a2ae"];
+
 export default {
   name: "GlobalHeader",
   props: {
@@ -24,6 +34,19 @@ export default {
       required: true,
       default: false
     }
+  },
+  data() {
+    return {
+      color: "",
+      avatorValue: ""
+    };
+  },
+  created() {
+    this.avatorValue = window.sessionStorage
+      .getItem("username")
+      .substring(0, 1);
+    this.color =
+      colorList[Math.floor(Math.random() * colorList.length + 1) - 1];
   },
   methods: {
     toggle() {
@@ -37,7 +60,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less">
 .layout-header {
   background: #fff;
   padding: 0;
@@ -47,5 +70,13 @@ export default {
 
 .user-wraper {
   padding-right: 24px;
+  display: flex;
+}
+
+.user-avator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 24px;
 }
 </style>

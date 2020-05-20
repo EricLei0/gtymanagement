@@ -3,6 +3,14 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
+/**
+ * 重写路由的push方法
+ */
+const routerPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return routerPush.call(this, location).catch(error => error);
+};
+
 const routes = [
   {
     path: "/user",
@@ -44,6 +52,54 @@ const routes = [
     ]
   },
   {
+    path: "/inventory",
+    component: () =>
+      import(/* webpackChunkName: "layout" */ "../layouts/BasicLayout"),
+    children: [
+      {
+        path: "/inventory/search",
+        name: "inventorySearch",
+        component: () =>
+          import(
+            /* webpackChunkName: "inventory" */ "../views/inventory/search"
+          ),
+        meta: { title: "台账查询" }
+      }
+    ]
+  },
+  {
+    path: "/dataManagement",
+    component: () =>
+      import(/* webpackChunkName: "layout" */ "../layouts/BasicLayout"),
+    children: [
+      {
+        path: "/dataManagement/search",
+        name: "dataManagementSearch",
+        component: () =>
+          import(
+            /* webpackChunkName: "dataManagement" */ "../views/dataManagement/search"
+          ),
+        meta: { title: "数据查询" }
+      }
+    ]
+  },
+  {
+    path: "/information",
+    component: () =>
+      import(/* webpackChunkName: "layout" */ "../layouts/BasicLayout"),
+    children: [
+      {
+        path: "/information/contacts",
+        name: "informationContacts",
+        component: () =>
+          import(
+            /* webpackChunkName: "information" */ "../views/information/contacts"
+          ),
+        meta: { title: "通讯录查询" }
+      }
+    ]
+  },
+  {
     path: "/about",
     name: "About",
     // route level code-splitting
@@ -51,7 +107,8 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue")
-  }
+  },
+  { path: "*", redirect: "/" }
 ];
 
 const router = new VueRouter({

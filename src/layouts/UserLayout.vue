@@ -4,6 +4,7 @@
       <router-view></router-view>
       <div class="footer">
         <p class="copy-right">Copyright© 2020 广西国土测绘院</p>
+        <p class="copy-right">此系统不支持IE浏览器！</p>
       </div>
     </div>
   </div>

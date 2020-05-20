@@ -7,7 +7,7 @@
       </div>
       <!--表单区域-->
       <div class="form-box">
-        <h2 class="title">项目管理系统</h2>
+        <h2 class="title">信息查询系统</h2>
         <a-form
           id="components-login"
           :form="form"
@@ -18,7 +18,7 @@
             <a-input
               size="large"
               v-decorator="[
-                'userName',
+                'username',
                 {
                   rules: [
                     {
@@ -27,7 +27,8 @@
                       max: 10,
                       message: '请输入一个2-10字的用户名!'
                     }
-                  ]
+                  ],
+                  initialValue: 'admin'
                 }
               ]"
               placeholder="请输入用户名"
@@ -53,7 +54,8 @@
                       max: 20,
                       message: '请输入一个6-20位的密码'
                     }
-                  ]
+                  ],
+                  initialValue: '88888888'
                 }
               ]"
               type="password"
@@ -95,6 +97,8 @@
 </template>
 
 <script>
+import user from "@/api/user";
+
 export default {
   data() {
     return {
@@ -109,15 +113,20 @@ export default {
       this.form.validateFields(async (err, values) => {
         if (!err) {
           console.log("Received values of form: ", values);
-          const { data: res } = await this.$http.post("/auth/login", values);
-          console.log(res);
-          if (res.success !== true) {
-            return this.$message.error("登录失败");
-          } else {
-            this.$message.success("登录成功");
-            window.sessionStorage.setItem("token", res.data.token);
-            this.$router.push("/account/welcome");
-          }
+          user.login({}, values).then(response => {
+            if (response.data.success != true) {
+              return this.$message.error("登录失败");
+            } else {
+              this.$message.success("登录成功");
+              window.sessionStorage.setItem("token", response.data.data.token);
+              this.$router.push("/inventory/search");
+              window.sessionStorage.setItem("openKeys", ["/inventory"]);
+              window.sessionStorage.setItem("selectedKeys", [
+                "/inventory/search"
+              ]);
+              window.sessionStorage.setItem("username", values.username);
+            }
+          });
         }
       });
     }
