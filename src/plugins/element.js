@@ -18,7 +18,10 @@ import {
   Pagination,
   ConfigProvider,
   Avatar,
-  Result
+  Result,
+  Tooltip,
+  Divider,
+  Modal
 } from "ant-design-vue";
 
 Vue.use(Button);
@@ -38,6 +41,9 @@ Vue.use(Pagination);
 Vue.use(ConfigProvider);
 Vue.use(Avatar);
 Vue.use(Result);
+Vue.use(Tooltip);
+Vue.use(Divider);
+Vue.use(Modal);
 
 Vue.prototype.$message = message;
 Vue.prototype.$notification = notification;

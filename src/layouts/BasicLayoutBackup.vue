@@ -13,30 +13,21 @@
         </a>
       </div>
       <a-menu
+        :openKeys="openKeys"
+        :selectedKeys="selectedKeys"
         mode="inline"
-        :open-keys="openKeys"
-        :selected-keys="selectedKeys"
-        style="width: 256px"
-        @openChange="onOpenChange"
-        @click="clickMenuItem"
         theme="dark"
+        :inline-collapsed="collapsed"
+        @click="clickMenuItem"
+        @openChange="handleOpenChange"
       >
-        <a-sub-menu key="/inventory">
-          <span slot="title">
-            <a-icon type="container" /><span>项目台账</span>
-          </span>
-          <a-menu-item key="/inventory/search">
-            项目台账查询
+        <template v-for="item in menuList">
+          <a-menu-item v-if="!item.children" :key="item.path">
+            <a-icon type="app-store" />
+            <span>{{ item.title }}</span>
           </a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu key="/information">
-          <span slot="title">
-            <a-icon type="appstore" /><span>其他信息</span>
-          </span>
-          <a-menu-item key="/information/contacts">
-            通讯录查询
-          </a-menu-item>
-        </a-sub-menu>
+          <sub-menu v-else :key="item.path" :menu-info="item" />
+        </template>
       </a-menu>
     </a-layout-sider>
     <a-layout>
@@ -61,15 +52,17 @@
 </template>
 <script>
 import GlobalHeader from "@/components/GlobalHeader";
+import { Menu } from "ant-design-vue";
+import user from "@/api/user";
 
-/*const SubMenu = {
+const SubMenu = {
   template: `
       <a-sub-menu :key="menuInfo.path" v-bind="$props" v-on="$listeners">
         <span slot="title">
           <a-icon :type="menuInfo.icon" /><span>{{ menuInfo.title }}</span>
         </span>
         <template v-for="item in menuInfo.children">
-          <a-menu-item v-if="!item.children" :key="item.path">
+          <a-menu-item v-if="!item.children.length" :key="item.path">
             <a-icon :type="item.icon" />
             <span>{{ item.title }}</span>
           </a-menu-item>
@@ -88,11 +81,12 @@ import GlobalHeader from "@/components/GlobalHeader";
       default: () => ({})
     }
   }
-};*/
+};
 
 export default {
   components: {
-    GlobalHeader
+    GlobalHeader,
+    "sub-menu": SubMenu
   },
   data() {
     return {
@@ -101,8 +95,7 @@ export default {
       //  菜单列表
       menuList: [],
       openKeys: [],
-      selectedKeys: [],
-      rootSubmenuKeys: ["/inventory", "/information"]
+      selectedKeys: []
     };
   },
   created() {
@@ -117,12 +110,11 @@ export default {
       this.collapsed = !this.collapsed;
     },
     async getMenuList() {
-      const { data: res } = await this.$http.get("menu");
-      if (res.meta.status !== 200) {
-        return this.$message.error("获取菜单失败");
-      } else {
-        this.menuList = res.data;
-      }
+      //const { data: res } = await this.$http.get("menu/get");
+      user.menu().then(response => {
+        console.log(response.data.data);
+        this.menuList = response.data.data;
+      });
     },
     clickMenuItem(e) {
       this.selectedKeys = [e.key];
@@ -130,15 +122,8 @@ export default {
       this.$router.push(e.key);
     },
     //  只展开一个菜单
-    onOpenChange(openKeys) {
-      const latestOpenKey = openKeys.find(
-        key => this.openKeys.indexOf(key) === -1
-      );
-      if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
-        this.openKeys = openKeys;
-      } else {
-        this.openKeys = latestOpenKey ? [latestOpenKey] : [];
-      }
+    handleOpenChange(openKeys) {
+      this.openKeys = openKeys;
       window.sessionStorage.setItem("openKeys", this.openKeys);
     },
     handleClick() {

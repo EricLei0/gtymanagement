@@ -7,12 +7,17 @@
     />
     <div class="user-wraper">
       <div class="user-avator">
-        <a-avatar
-          size="large"
-          :style="{ verticalAlign: 'middle', backgroundColor: color }"
-        >
-          {{ avatorValue }}
-        </a-avatar>
+        <a-tooltip placement="bottom">
+          <template slot="title">
+            <span>用户名：{{ this.GLOBAL.username }}</span>
+          </template>
+          <a-avatar
+            size="large"
+            :style="{ verticalAlign: 'middle', backgroundColor: color }"
+          >
+            {{ avatorValue }}
+          </a-avatar>
+        </a-tooltip>
       </div>
       <div class="exit-button">
         <a-button type="primary" @click="logout">

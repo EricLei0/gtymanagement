@@ -10,7 +10,7 @@
                 <a-select-option value="name">
                   姓名
                 </a-select-option>
-                <a-select-option value="department">
+                <a-select-option value="dept">
                   部门
                 </a-select-option>
               </a-select>
@@ -32,7 +32,7 @@
             :columns="columns"
             :data-source="data"
             :pagination="pagination"
-            rowKey="id"
+            rowKey="bsm"
           />
         </div>
       </a-card>
@@ -48,9 +48,9 @@ const columns = [
   {
     title: "编号",
     width: 120,
-    dataIndex: "id",
+    dataIndex: "bsm",
     className: "column-header",
-    key: "id"
+    key: "bsm"
   },
   {
     title: "姓名",
@@ -66,8 +66,8 @@ const columns = [
   {
     title: "部门",
     width: 300,
-    dataIndex: "department",
-    key: "department",
+    dataIndex: "dept",
+    key: "dept",
     className: "column-header",
     sorter: (a, b) => {
       return a.dept.localeCompare(b.dept);
@@ -77,26 +77,26 @@ const columns = [
   {
     title: "职务",
     width: 200,
-    dataIndex: "title",
-    key: "title",
+    dataIndex: "duty",
+    key: "duty",
     className: "column-header",
     sorter: (a, b) => {
-      return a.title.localeCompare(b.title);
+      return a.duty.localeCompare(b.duty);
     },
     sortDirections: ["descend", "ascend"]
   },
   {
     title: "手机",
     width: 250,
-    dataIndex: "mobile",
-    key: "mobile",
+    dataIndex: "mobilephone",
+    key: "mobilephone",
     className: "column-header"
   },
   {
     title: "电话",
     width: 200,
-    dataIndex: "work",
-    key: "work",
+    dataIndex: "telephone",
+    key: "telephone",
     className: "column-header"
   },
   {
@@ -158,24 +158,22 @@ export default {
     async getDataTable() {
       if (this.keyword === "") {
         var query = {
-          pageNum: this.queryParams.pageNum,
-          pageSize: this.queryParams.pageSize
+          page: this.queryParams.pageNum,
+          rows: this.queryParams.pageSize
         };
-        await contacts.search(query, {}).then(response => {
-          this.data = response.data.data.content;
-          this.pagination.total = response.data.data.totalElements;
+        await contacts.search(query).then(response => {
+          this.data = response.data.rows;
+          this.pagination.total = response.data.total;
         });
       } else {
-        var dataBody = {
+        query = {
+          page: this.queryParams.pageNum,
+          rows: this.queryParams.pageSize,
           [this.queryParams.keyName]: this.queryParams.keyValue
         };
-        query = {
-          pageNum: this.queryParams.pageNum,
-          pageSize: this.queryParams.pageSize
-        };
-        await contacts.search(query, dataBody).then(response => {
-          this.data = response.data.data.content;
-          this.pagination.total = response.data.data.totalElements;
+        await contacts.search(query).then(response => {
+          this.data = response.data.rows;
+          this.pagination.total = response.data.total;
         });
       }
     },

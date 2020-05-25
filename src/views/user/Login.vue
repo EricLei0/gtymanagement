@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import user from "@/api/user";
+//import user from "@/api/user";
 
 export default {
   data() {
@@ -113,7 +113,7 @@ export default {
       this.form.validateFields(async (err, values) => {
         if (!err) {
           console.log("Received values of form: ", values);
-          user.login({}, values).then(response => {
+          /*user.login({}, values).then(response => {
             if (response.data.success != true) {
               return this.$message.error("登录失败");
             } else {
@@ -125,8 +125,16 @@ export default {
                 "/inventory/search"
               ]);
               window.sessionStorage.setItem("username", values.username);
+              this.GLOBAL.username = values.username;
             }
-          });
+          });*/
+          this.$message.success("登录成功");
+          window.sessionStorage.setItem("token", "xxxx");
+          this.$router.push("/inventory/search");
+          window.sessionStorage.setItem("openKeys", ["/inventory"]);
+          window.sessionStorage.setItem("selectedKeys", ["/inventory/search"]);
+          window.sessionStorage.setItem("username", values.username);
+          this.GLOBAL.username = values.username;
         }
       });
     }

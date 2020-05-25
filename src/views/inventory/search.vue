@@ -13,16 +13,16 @@
           <a-row>
             <a-col :span="3">
               <a-select v-model="select" size="large" style="width:100%">
-                <a-select-option value="projectName">
+                <a-select-option value="itemname">
                   项目名称
                 </a-select-option>
                 <a-select-option value="year">
                   年份
                 </a-select-option>
-                <a-select-option value="department">
+                <a-select-option value="commitmentdept">
                   承担部门
                 </a-select-option>
-                <a-select-option value="manager">
+                <a-select-option value="datamanger">
                   数据管理员
                 </a-select-option>
               </a-select>
@@ -93,19 +93,45 @@
             :columns="columns"
             :data-source="data"
             :pagination="pagination"
-            rowKey="id"
-          />
+            rowKey="bsm"
+          >
+            <span slot="operation" slot-scope="record">
+              <a @click="() => setModifyVisible(true, record)">
+                修改
+              </a>
+              <a-divider type="vertical" />
+              <a @click="() => setDeleteVisible(true, record)">删除</a>
+              <!-- 修改项目台账弹窗 -->
+              <a-modal
+                v-model="modalModifyVisible"
+                title="修改项目台账"
+                width="720px"
+              >
+                <template slot="footer">
+                  <a-button key="back">
+                    取消
+                  </a-button>
+                  <a-button type="primary" key="submit">
+                    修改
+                  </a-button>
+                </template>
+                <!-- 修改表单 -->
+                <a-form
+                  form="formModify"
+                  :label-col="{ span: 5 }"
+                  :wrapper-col="{ span: 12 }"
+                >
+                  <a-form-item label="编号">
+                    <span class="ant-form-text">
+                      {{ selectedRecord.bsm }}
+                    </span>
+                  </a-form-item>
+                </a-form>
+              </a-modal>
+              <!-- 修改项目台账弹窗结束 -->
+            </span>
+          </a-table>
         </div>
-        <!--<div class="pagination-div">
-          <a-pagination
-            show-quick-jumper
-            show-size-changer
-            v-model="currentPage"
-            :total="500"
-            @change="onChange"
-            :show-total="total => `共 ${total} 条`"
-          />
-        </div> -->
       </a-card>
     </div>
   </div>
@@ -122,20 +148,20 @@ const columns = [
   {
     title: "编号",
     width: 80,
-    dataIndex: "id",
+    dataIndex: "bsm",
     className: "column-header",
-    key: "id",
-    fixed: "left"
+    key: "id"
+    //  fixed: "left"
   },
   {
     title: "项目名称",
-    width: 450,
-    dataIndex: "projectName",
-    key: "projectName",
+    width: 350,
+    dataIndex: "itemname",
+    key: "itemname",
     className: "column-header",
-    fixed: "left",
+    //  fixed: "left",
     sorter: (a, b) => {
-      return a.projectName.localeCompare(b.projectName);
+      return a.itemname.localeCompare(b.itemname);
     },
     sortDirections: ["descend", "ascend"]
   },
@@ -152,12 +178,12 @@ const columns = [
   },
   {
     title: "承担部门",
-    dataIndex: "department",
-    key: "department",
+    dataIndex: "commitmentdept",
+    key: "commitmentdept",
     className: "column-header",
-    width: 300,
+    width: 250,
     sorter: (a, b) => {
-      return a.department.localeCompare(b.department);
+      return a.commitmentdept.localeCompare(b.commitmentdept);
     },
     sortDirections: ["descend", "ascend"]
   },
@@ -174,20 +200,26 @@ const columns = [
   },
   {
     title: "数据管理员",
-    dataIndex: "manager",
-    key: "manager",
+    dataIndex: "datamanger",
+    key: "datamanger",
     className: "column-header",
     width: 180,
     sorter: (a, b) => {
-      return a.manager.localeCompare(b.manager);
+      return a.datamanger.localeCompare(b.datamanger);
     },
     sortDirections: ["descend", "ascend"]
   },
   {
     title: "备注",
-    dataIndex: "remark",
-    key: "remark",
-    className: "column-header"
+    dataIndex: "remarks",
+    key: "remarks",
+    className: "column-header",
+    width: 150
+  },
+  {
+    title: "操作",
+    key: "operation",
+    scopedSlots: { customRender: "operation" }
   }
 ];
 const draggingMap = {};
@@ -273,13 +305,13 @@ export default {
       key: "tab1",
       noTitleKey: "singleSearch",
       columns,
-      select: "projectName",
+      select: "itemname",
       keyword: "",
       data: [],
       currentPage: 1,
       //  获取台账的参数对象
       queryParaSingle: {
-        keyName: "projectName",
+        keyName: "itemname",
         keyValue: "",
         pageNum: 1,
         pageSize: 10
@@ -315,7 +347,7 @@ export default {
       paramsList: [
         {
           key: 1,
-          pName: "projectName",
+          pName: "itemname",
           pLabel: "项目名称"
         },
         {
@@ -325,12 +357,12 @@ export default {
         },
         {
           key: 3,
-          pName: "department",
+          pName: "commitmentdept",
           pLabel: "承担部门"
         },
         {
           key: 4,
-          pName: "manager",
+          pName: "datamanger",
           pLabel: "数据管理员"
         }
       ],
@@ -338,7 +370,10 @@ export default {
       multipleParams: {},
       searchState: "single",
       expand: false,
-      stripe: true
+      stripe: true,
+      modalModifyVisible: false,
+      modalDeleteVisible: false,
+      selectedRecord: {}
     };
   },
   methods: {
@@ -351,24 +386,23 @@ export default {
     async getDataSingle() {
       if (this.keyword === "") {
         var query = {
-          pageNum: this.queryParaSingle.pageNum,
-          pageSize: this.queryParaSingle.pageSize
+          page: this.queryParaSingle.pageNum,
+          rows: this.queryParaSingle.pageSize
         };
-        inventory.search(query, {}).then(response => {
-          this.data = response.data.data.content;
-          this.pagination.total = response.data.data.totalElements;
+        inventory.search(query).then(response => {
+          console.log(response.data.rows);
+          this.data = response.data.rows;
+          this.pagination.total = response.data.total;
         });
       } else {
-        var dataBody = {
+        query = {
+          page: this.queryParaSingle.pageNum,
+          rows: this.queryParaSingle.pageSize,
           [this.queryParaSingle.keyName]: this.queryParaSingle.keyValue
         };
-        query = {
-          pageNum: this.queryParaSingle.pageNum,
-          pageSize: this.queryParaSingle.pageSize
-        };
-        inventory.search(query, dataBody).then(response => {
-          this.data = response.data.data.content;
-          this.pagination.total = response.data.data.totalElements;
+        inventory.search(query).then(response => {
+          this.data = response.data.rows;
+          this.pagination.total = response.data.total;
         });
         /*const { data: res } = await this.$http.post(
           //  "/inventory/search",
@@ -406,7 +440,7 @@ export default {
       var values = this.multipleForm.getFieldsValue();
       var params = {};
       for (var i in values) {
-        if (values[i] !== undefined) {
+        if (values[i] !== undefined && values[i] !== "") {
           params[i] = values[i];
         }
       }
@@ -419,22 +453,20 @@ export default {
     async getDataMultiple(datas) {
       console.log(datas);
       if (JSON.stringify(datas) == "{}") {
-        var query = {
-          pageNum: this.queryParaSingle.pageNum,
-          pageSize: this.queryParaSingle.pageSize
+        datas = {
+          page: this.queryParaSingle.pageNum,
+          rows: this.queryParaSingle.pageSize
         };
-        await inventory.search(query, {}).then(response => {
-          this.data = response.data.data.content;
-          this.pagination.total = response.data.data.totalElements;
+        await inventory.search(datas).then(response => {
+          this.data = response.data.rows;
+          this.pagination.total = response.data.total;
         });
       } else {
-        query = {
-          pageNum: this.queryParaSingle.pageNum,
-          pageSize: this.queryParaSingle.pageSize
-        };
-        await inventory.search(query, datas).then(response => {
-          this.data = response.data.data.content;
-          this.pagination.total = response.data.data.totalElements;
+        datas["page"] = this.queryParaSingle.pageNum;
+        datas["rows"] = this.queryParaSingle.pageSize;
+        await inventory.search(datas).then(response => {
+          this.data = response.data.rows;
+          this.pagination.total = response.data.total;
         });
       }
     },
@@ -452,6 +484,15 @@ export default {
           }
         });
       }
+    },
+    setModifyVisible(modalVisible, record) {
+      this.modalModifyVisible = modalVisible;
+      this.selectedRecord = record;
+      console.log(this.selectedRecord);
+    },
+    setDeleteVisible(modalVisible, record) {
+      this.modalDeleteVisible = modalVisible;
+      this.selectedRecord = record;
     }
   },
   computed: {
