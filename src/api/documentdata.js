@@ -13,46 +13,69 @@ export default {
 
   search(parameter) {
     return request({
-      url: "/itemInventory/list",
+      url: "/documenData/list",
       method: "get",
       params: parameter
     });
   },
 
-  addrecord(parameter) {
+  searchdirectory(parameter) {
     return request({
-      url: "/itemInventory/add",
+      url: "/documenData/getDirectory",
       method: "get",
+      params: parameter
+    });
+  },
+
+  add(parameter) {
+    return request({
+      url: "/documenData/add",
+      method: "post",
+      header: {
+        "Content-Type": "application/json"
+      },
       params: parameter
     });
   },
 
   modify(
     bsm,
-    itemname,
+    name,
+    city,
     type,
-    year,
-    commitmentdept,
-    owner,
-    datamanger,
-    director,
+    provideCmpy,
+    provideDept,
+    provider,
+    phone,
+    dataFormat,
+    collectTime,
+    collectPerson,
+    path,
+    belongItem,
+    validaty,
     remark
   ) {
     return request({
-      url: "/itemInventory/update",
+      url: "/documenData/update",
       method: "post",
       header: {
         "Content-Type": "application/json"
       },
       params: {
         bsm,
-        itemname,
+        name,
+        city,
         type,
-        year,
-        commitmentdept,
-        owner,
-        datamanger,
-        director,
+        provideCmpy,
+        provideDept,
+        provider,
+        phone,
+        dataFormat,
+        collectTime,
+        collectPerson,
+        path,
+        belongItem,
+        validaty,
         remark
       }
       // headers: { "Content-Type": "application/json" },

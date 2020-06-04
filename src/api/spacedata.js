@@ -13,16 +13,19 @@ export default {
 
   search(parameter) {
     return request({
-      url: "/itemInventory/list",
+      url: "/spaceData/list",
       method: "get",
       params: parameter
     });
   },
 
-  addrecord(parameter) {
+  add(parameter) {
     return request({
-      url: "/itemInventory/add",
-      method: "get",
+      url: "/spaceData/add",
+      method: "post",
+      header: {
+        "Content-Type": "application/json"
+      },
       params: parameter
     });
   },
@@ -39,7 +42,7 @@ export default {
     remark
   ) {
     return request({
-      url: "/itemInventory/update",
+      url: "/documenData/list",
       method: "post",
       header: {
         "Content-Type": "application/json"

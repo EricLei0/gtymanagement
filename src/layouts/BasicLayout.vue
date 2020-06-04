@@ -20,7 +20,20 @@
         @openChange="onOpenChange"
         @click="clickMenuItem"
         theme="dark"
+        :defaultopenkeys="['/datainformation']"
       >
+        <!--         <a-sub-menu key="/work">
+          <span slot="title">
+            <a-icon type="appstore" /><span>我的工作</span>
+          </span>
+          <a-menu-item key="/work/worklog">
+            工作填报
+          </a-menu-item>
+          <a-menu-item key="/work/myproject">
+            我的项目
+          </a-menu-item>
+        </a-sub-menu> -->
+        <!-- 
         <a-sub-menu key="/inventory">
           <span slot="title">
             <a-icon type="container" /><span>项目台账</span>
@@ -28,7 +41,23 @@
           <a-menu-item key="/inventory/search">
             项目台账查询
           </a-menu-item>
+        </a-sub-menu> -->
+
+        <a-sub-menu key="/datainformation">
+          <span slot="title">
+            <a-icon type="appstore" /><span>数据查询</span>
+          </span>
+          <a-menu-item key="/inventory/search">
+            项目台账查询
+          </a-menu-item>
+          <a-menu-item key="/spacedata/search">
+            空间数据查询
+          </a-menu-item>
+          <a-menu-item key="/documentdata/search">
+            文档数据查询
+          </a-menu-item>
         </a-sub-menu>
+
         <a-sub-menu key="/information">
           <span slot="title">
             <a-icon type="appstore" /><span>其他信息</span>
@@ -102,13 +131,21 @@ export default {
       menuList: [],
       openKeys: [],
       selectedKeys: [],
-      rootSubmenuKeys: ["/inventory", "/information"]
+      rootSubmenuKeys: [
+        "/inventory",
+        "/information",
+        "/datainformation",
+        "/worklog"
+      ]
     };
   },
   created() {
     //this.getMenuList();
+
     this.openKeys = [
-      this.$route.path.substr(0, this.$route.path.lastIndexOf("/"))
+      //this.$route.path.substr(0, this.$route.path.lastIndexOf("/"))
+      "/datainformation",
+      "/information"
     ];
     this.selectedKeys = [this.$route.path];
   },

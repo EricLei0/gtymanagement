@@ -52,6 +52,39 @@ const routes = [
     ]
   },
   {
+    path: "/work",
+    component: () =>
+      import(/* webpackChunkName: "layout" */ "../layouts/BasicLayout"),
+    children: [
+      {
+        path: "/work/worklog",
+        name: "worklog",
+        component: () =>
+          import(
+            /* webpackChunkName: "dataManagement" */ "../views/work/worklog"
+          ),
+        meta: { title: "工作填报" }
+      }
+    ]
+  },
+  {
+    path: "/work",
+    component: () =>
+      import(/* webpackChunkName: "layout" */ "../layouts/BasicLayout"),
+    children: [
+      {
+        path: "/work/myproject",
+        name: "myproject",
+        component: () =>
+          import(
+            /* webpackChunkName: "dataManagement" */ "../views/work/myproject"
+          ),
+        meta: { title: "我的项目" }
+      }
+    ]
+  },
+
+  {
     path: "/inventory",
     component: () =>
       import(/* webpackChunkName: "layout" */ "../layouts/BasicLayout"),
@@ -68,16 +101,32 @@ const routes = [
     ]
   },
   {
-    path: "/dataManagement",
+    path: "/documentdata",
     component: () =>
       import(/* webpackChunkName: "layout" */ "../layouts/BasicLayout"),
     children: [
       {
-        path: "/dataManagement/search",
-        name: "dataManagementSearch",
+        path: "/documentdata/search",
+        name: "documentdata",
         component: () =>
           import(
-            /* webpackChunkName: "dataManagement" */ "../views/dataManagement/search"
+            /* webpackChunkName: "dataManagement" */ "../views/documentData/search"
+          ),
+        meta: { title: "数据查询" }
+      }
+    ]
+  },
+  {
+    path: "/spacedata",
+    component: () =>
+      import(/* webpackChunkName: "layout" */ "../layouts/BasicLayout"),
+    children: [
+      {
+        path: "/spacedata/search",
+        name: "spacedata",
+        component: () =>
+          import(
+            /* webpackChunkName: "dataManagement" */ "../views/spaceData/search"
           ),
         meta: { title: "数据查询" }
       }
@@ -107,8 +156,8 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue")
-  },
-  { path: "*", redirect: "/" }
+  }
+  /* { path: "*", redirect: "/" } */
 ];
 
 const router = new VueRouter({

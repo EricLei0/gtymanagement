@@ -6,18 +6,35 @@ module.exports = {
       }
     }
   },
+
   devServer: {
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:3000/api",
+        target: "http://127.0.0.1:8084",
         //target: this.publicPath + "/api",
         ws: true,
         changeOrigin: true,
         pathRewrite: {
-          "^/api": "/api"
+          "^/api": ""
         }
       }
     }
   },
+
+  /* 
+  devServer: {
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:8084",
+        //target: this.publicPath + "/api",
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          "^/api": "/"
+        }
+      }
+    }
+  }, */
+
   runtimeCompiler: true
 };

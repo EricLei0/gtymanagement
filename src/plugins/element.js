@@ -21,7 +21,9 @@ import {
   Result,
   Tooltip,
   Divider,
-  Modal
+  Modal,
+  FormModel,
+  Upload
 } from "ant-design-vue";
 
 Vue.use(Button);
@@ -44,6 +46,8 @@ Vue.use(Result);
 Vue.use(Tooltip);
 Vue.use(Divider);
 Vue.use(Modal);
+Vue.use(FormModel);
+Vue.use(Upload);
 
 Vue.prototype.$message = message;
 Vue.prototype.$notification = notification;

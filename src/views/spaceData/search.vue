@@ -13,17 +13,29 @@
           <a-row>
             <a-col :span="3">
               <a-select v-model="select" size="large" style="width:100%">
-                <a-select-option value="itemname">
-                  项目名称
+                <a-select-option value="dataName">
+                  数据名称
                 </a-select-option>
-                <a-select-option value="year">
-                  年份
+                <a-select-option value="city">
+                  所属市县
                 </a-select-option>
-                <a-select-option value="commitmentdept">
-                  承担部门
+                <a-select-option value="provideCmpy">
+                  提供单位
                 </a-select-option>
-                <a-select-option value="datamanger">
-                  数据管理员
+                <a-select-option value="provideDept">
+                  提供部门
+                </a-select-option>
+                <a-select-option value="belongItem">
+                  所属项目
+                </a-select-option>
+                <a-select-option value="dataType">
+                  数据类型
+                </a-select-option>
+                <a-select-option value="dataFormat">
+                  数据格式
+                </a-select-option>
+                <a-select-option value="gis">
+                  坐标系统
                 </a-select-option>
               </a-select>
             </a-col>
@@ -36,24 +48,28 @@
                 v-model="keyword"
               />
             </a-col>
-            <!--             <a-col :span="6">
-              <div style="font-size:30px">
-                <a-icon
-                  type="plus-square"
-                  style="margin-left:350px"
-                  @click="openModal"
-                />
-              </div>
-            </a-col> -->
-            <a-col :span="6">
+            <a-col :span="3">
               <a-button
                 type="primary"
-                style="margin-left:315px;height:38px"
-                @click="openModal"
+                style="margin-left:40px;height:38px"
+                @click="openAddModal"
               >
                 添加
               </a-button>
             </a-col>
+            <a-upload
+              :multiple="true"
+              action="http://192.168.2.200:8084/spaceData/excel"
+              enctype="multipart/form-data"
+              :format="['xlsx', 'xls']"
+              @change="handleChange"
+            >
+              <a-button
+                style="margin-left:55px;font-size:18px;height:40px;width:130px"
+              >
+                <a-icon type="upload" /> Excel导入
+              </a-button>
+            </a-upload>
           </a-row>
         </div>
         <div v-else-if="noTitleKey === 'multipleSearch'">
@@ -110,6 +126,7 @@
             :columns="columns"
             :data-source="data"
             :pagination="pagination"
+            :scroll="{ x: 3000, y: 600 }"
             rowKey="bsm"
           >
             <span slot="operation" slot-scope="record">
@@ -117,17 +134,91 @@
                 修改
               </a>
               <a-divider type="vertical" />
-
               <a @click="() => setDeleteVisible(true, record)">删除</a>
 
-              <!-- 修改项目台账弹窗 -->
+              <!-- 新增空间数据弹窗 -->
+              <a-modal
+                v-model="modalAddVisible"
+                title="新增空间数据"
+                width="720px"
+                mask="false"
+              >
+                <template slot="footer">
+                  <a-button key="back" @click="closeAddModal">
+                    取消
+                  </a-button>
+                  <a-button
+                    type="primary"
+                    key="submit"
+                    @click="() => addSpacedataRecord(formAdd)"
+                  >
+                    新增
+                  </a-button>
+                </template>
+
+                <a-form-model
+                  :model="formAdd"
+                  :label-col="labelCol"
+                  :wrapper-col="wrapperCol"
+                  :rules="addrules"
+                >
+                  <a-form-model-item label="数据名称" prop="dataName">
+                    <a-input v-model="formAdd.dataName" />
+                  </a-form-model-item>
+                  <a-form-model-item label="要素代码">
+                    <a-input v-model="formAdd.ysdm" />
+                  </a-form-model-item>
+                  <a-form-model-item label="数据类型" prop="dataType">
+                    <a-input v-model="formAdd.dataType" />
+                  </a-form-model-item>
+                  <a-form-model-item label="所属市县" prop="city">
+                    <a-input v-model="formAdd.city" />
+                  </a-form-model-item>
+                  <a-form-model-item label="提供单位">
+                    <a-input v-model="formAdd.provideCmpy" />
+                  </a-form-model-item>
+                  <a-form-model-item label="提供部门">
+                    <a-input v-model="formAdd.provideDept" />
+                  </a-form-model-item>
+                  <a-form-model-item label="提供人">
+                    <a-input v-model="formAdd.provider" />
+                  </a-form-model-item>
+                  <a-form-model-item label="联系方式">
+                    <a-input v-model="formAdd.phone" />
+                  </a-form-model-item>
+                  <a-form-model-item label="数据格式">
+                    <a-input v-model="formAdd.dataFormat" />
+                  </a-form-model-item>
+                  <a-form-model-item label="坐标系统" prop="gis">
+                    <a-input v-model="formAdd.gis" />
+                  </a-form-model-item>
+                  <a-form-model-item label="收集时间">
+                    <a-input v-model="formAdd.collectTime" />
+                  </a-form-model-item>
+                  <a-form-model-item label="收集人">
+                    <a-input v-model="formAdd.collectPer" />
+                  </a-form-model-item>
+                  <a-form-model-item label="数据管理员">
+                    <a-input v-model="formAdd.dataManager" />
+                  </a-form-model-item>
+                  <a-form-model-item label="所属项目">
+                    <a-input v-model="formAdd.belongItem" />
+                  </a-form-model-item>
+                  <a-form-model-item label="备注">
+                    <a-input v-model="formAdd.remark" />
+                  </a-form-model-item>
+                </a-form-model>
+              </a-modal>
+              <!-- 新增空间数据弹窗结束 -->
+
+              <!-- 修改空间数据弹窗 -->
               <a-modal
                 v-model="modalModifyVisible"
                 title="修改项目台账"
                 width="720px"
               >
                 <template slot="footer">
-                  <a-button key="back">
+                  <a-button key="back" @click="closeModifyModal">
                     取消
                   </a-button>
                   <a-button type="primary" key="submit" @click="modify">
@@ -141,85 +232,54 @@
                   :wrapper-col="wrapperCol"
                   :rules="updaterules"
                 >
-                  <a-form-model-item label="项目名称">
-                    <a-input v-model="formModify.itemname" />
+                  <a-form-model-item label="数据名称" prop="dataName">
+                    <a-input v-model="formModify.dataName" />
                   </a-form-model-item>
-                  <a-form-model-item label="年份">
-                    <a-input v-model="formModify.year" />
+                  <a-form-model-item label="要素代码">
+                    <a-input v-model="formModify.ysdm" />
                   </a-form-model-item>
-                  <a-form-model-item label="承担部门">
-                    <a-input v-model="formModify.commitmentdept" />
+                  <a-form-model-item label="数据类型" prop="dataType">
+                    <a-input v-model="formModify.dataType" />
                   </a-form-model-item>
-                  <a-form-model-item label="业主单位">
-                    <a-input v-model="formModify.owner" />
+                  <a-form-model-item label="所属市县" prop="city">
+                    <a-input v-model="formModify.city" />
+                  </a-form-model-item>
+                  <a-form-model-item label="提供单位">
+                    <a-input v-model="formModify.provideCmpy" />
+                  </a-form-model-item>
+                  <a-form-model-item label="提供部门">
+                    <a-input v-model="formModify.provideDept" />
+                  </a-form-model-item>
+                  <a-form-model-item label="提供人">
+                    <a-input v-model="formModify.provideCmpy" />
+                  </a-form-model-item>
+                  <a-form-model-item label="联系方式">
+                    <a-input v-model="formModify.phone" />
+                  </a-form-model-item>
+                  <a-form-model-item label="数据格式">
+                    <a-input v-model="formModify.dataFormat" />
+                  </a-form-model-item>
+                  <a-form-model-item label="坐标系统" prop="gis">
+                    <a-input v-model="formModify.gis" />
+                  </a-form-model-item>
+                  <a-form-model-item label="收集时间">
+                    <a-input v-model="formModify.collectTime" />
+                  </a-form-model-item>
+                  <a-form-model-item label="收集人">
+                    <a-input v-model="formModify.collectPer" />
                   </a-form-model-item>
                   <a-form-model-item label="数据管理员">
-                    <a-input v-model="formModify.datamanger" />
+                    <a-input v-model="formModify.dataManager" />
                   </a-form-model-item>
-                  <a-form-model-item label="项目类型">
-                    <a-input v-model="formModify.type" />
-                  </a-form-model-item>
-                  <a-form-model-item label="项目负责人">
-                    <a-input v-model="formModify.director" />
+                  <a-form-model-item label="所属项目">
+                    <a-input v-model="formModify.belongItem" />
                   </a-form-model-item>
                   <a-form-model-item label="备注">
-                    <a-input v-model="formModify.remarks" />
+                    <a-input v-model="formModify.remark" />
                   </a-form-model-item>
                 </a-form-model>
               </a-modal>
-              <!-- 修改项目台账弹窗结束 -->
-              <!-- 新增项目台账弹窗 -->
-              <a-modal
-                v-model="modalAddVisible"
-                title="新增项目台账"
-                width="720px"
-              >
-                <template slot="footer">
-                  <a-button key="back" @click="closeAddModal">
-                    取消
-                  </a-button>
-                  <a-button
-                    type="primary"
-                    key="submit"
-                    @click="() => addRecordaa(addForm)"
-                  >
-                    新增
-                  </a-button>
-                </template>
-
-                <a-form-model
-                  :model="addForm"
-                  :label-col="labelCol"
-                  :wrapper-col="wrapperCol"
-                  :rules="addrules"
-                >
-                  <a-form-model-item label="项目名称" prop="itemname">
-                    <a-input v-model="addForm.itemname" />
-                  </a-form-model-item>
-                  <a-form-model-item label="年份" prop="year">
-                    <a-input v-model="addForm.year" />
-                  </a-form-model-item>
-                  <a-form-model-item label="承担部门" prop="commitmentdept">
-                    <a-input v-model="addForm.commitmentdept" />
-                  </a-form-model-item>
-                  <a-form-model-item label="业主单位" prop="owner">
-                    <a-input v-model="addForm.owner" />
-                  </a-form-model-item>
-                  <a-form-model-item label="数据管理员" prop="datamanger">
-                    <a-input v-model="addForm.datamanger" />
-                  </a-form-model-item>
-                  <a-form-model-item label="项目类型">
-                    <a-input v-model="addForm.type" />
-                  </a-form-model-item>
-                  <a-form-model-item label="项目负责人" prop="director">
-                    <a-input v-model="addForm.director" />
-                  </a-form-model-item>
-                  <a-form-model-item label="备注">
-                    <a-input v-model="formModify.remarks" />
-                  </a-form-model-item>
-                </a-form-model>
-              </a-modal>
-              <!-- 新增项目台账弹窗结束 -->
+              <!-- 修改空间数据弹窗结束 -->
             </span>
           </a-table>
         </div>
@@ -233,6 +293,8 @@ import TitleHeader from "@/components/TitleHeader";
 import Vue from "vue";
 import VueDraggableResizable from "vue-draggable-resizable";
 import inventory from "@/api/inventory";
+import documentdata from "@/api/documentdata";
+import spacedata from "@/api/spacedata";
 
 Vue.component("vue-draggable-resizable", VueDraggableResizable);
 const columns = [
@@ -241,75 +303,170 @@ const columns = [
     width: 80,
     dataIndex: "bsm",
     className: "column-header",
-    key: "id",
-    tags: ""
+    key: "id"
     //  fixed: "left"
   },
   {
-    title: "项目名称",
+    title: "数据名称",
+    fixed: "left",
     width: 350,
-    dataIndex: "itemname",
-    key: "itemname",
+    dataIndex: "dataName",
+    key: "dataName", //对应数据库的返回键
     className: "column-header",
     //  fixed: "left",
     sorter: (a, b) => {
-      return a.itemname.localeCompare(b.itemname);
+      return a.dataName.localeCompare(b.dataName);
     },
     sortDirections: ["descend", "ascend"]
   },
   {
-    title: "年份",
-    dataIndex: "year",
-    key: "year",
+    title: "数据类型",
+    width: 200,
+    dataIndex: "dataType",
+    key: "dataType", //对应数据库的返回键
+    className: "column-header",
+    //  fixed: "left",
+    sorter: (a, b) => {
+      return a.dataType.localeCompare(b.dataType);
+    },
+    sortDirections: ["descend", "ascend"]
+  },
+  {
+    title: "市县",
+    dataIndex: "city",
+    key: "city",
     className: "column-header",
     width: 100,
     sorter: (a, b) => {
-      return a.year.localeCompare(b.year);
+      return a.city.localeCompare(b.city);
     },
     sortDirections: ["descend", "ascend"]
   },
   {
-    title: "承担部门",
-    dataIndex: "commitmentdept",
+    title: "提供单位",
+    dataIndex: "provideCmpy",
     key: "commitmentdept",
-    className: "column-header",
-    width: 250,
-    sorter: (a, b) => {
-      return a.commitmentdept.localeCompare(b.commitmentdept);
-    },
-    sortDirections: ["descend", "ascend"]
-  },
-  {
-    title: "业主单位",
-    dataIndex: "owner",
-    key: "owner",
     className: "column-header",
     width: 200,
     sorter: (a, b) => {
-      return a.owner.localeCompare(b.owner);
+      return a.provideCmpy.localeCompare(b.provideCmpy);
+    },
+    sortDirections: ["descend", "ascend"]
+  },
+  {
+    title: "提供部门",
+    width: 200,
+    dataIndex: "provideDept",
+    key: "provideDept", //对应数据库的返回键
+    className: "column-header",
+    //  fixed: "left",
+    sorter: (a, b) => {
+      return a.provideDept.localeCompare(b.provideDept);
+    },
+    sortDirections: ["descend", "ascend"]
+  },
+  {
+    title: "提供人",
+    dataIndex: "provider",
+    key: "provider",
+    className: "column-header",
+    width: 200,
+    sorter: (a, b) => {
+      return a.provider.localeCompare(b.provider);
+    },
+    sortDirections: ["descend", "ascend"]
+  },
+  {
+    title: "联系方式",
+    dataIndex: "phone",
+    key: "phone",
+    className: "column-header",
+    width: 200,
+    sorter: (a, b) => {
+      return a.phone.localeCompare(b.phone);
+    },
+    sortDirections: ["descend", "ascend"]
+  },
+  {
+    title: "所属项目",
+    dataIndex: "belongItem",
+    key: "owner",
+    className: "column-header",
+    width: 250,
+    sorter: (a, b) => {
+      return a.belongItem.localeCompare(b.belongItem);
+    },
+    sortDirections: ["descend", "ascend"]
+  },
+  {
+    title: "数据格式",
+    dataIndex: "dataFormat",
+    key: "owner",
+    className: "column-header",
+    width: 250,
+    sorter: (a, b) => {
+      return a.dataFormat.localeCompare(b.dataFormat);
+    },
+    sortDirections: ["descend", "ascend"]
+  },
+  {
+    title: "坐标系统",
+    dataIndex: "gis",
+    key: "gis",
+    className: "column-header",
+    width: 250,
+    sorter: (a, b) => {
+      return a.gis.localeCompare(b.gis);
+    },
+    sortDirections: ["descend", "ascend"]
+  },
+  {
+    title: "收集时间",
+    dataIndex: "collectTime",
+    key: "datamanger",
+    className: "column-header",
+    width: 130,
+    sorter: (a, b) => {
+      return a.collectTime.localeCompare(b.collectTime);
+    },
+    sortDirections: ["descend", "ascend"]
+  },
+  {
+    title: "收集人",
+    dataIndex: "collectPer",
+    key: "collectPer",
+    className: "column-header",
+    width: 130,
+    sorter: (a, b) => {
+      return a.collectPer.localeCompare(b.collectPer);
     },
     sortDirections: ["descend", "ascend"]
   },
   {
     title: "数据管理员",
-    dataIndex: "datamanger",
-    key: "datamanger",
+    dataIndex: "dataManager",
+    key: "dataManager",
     className: "column-header",
-    width: 180,
+    width: 130,
     sorter: (a, b) => {
-      return a.datamanger.localeCompare(b.datamanger);
+      return a.dataManager.localeCompare(b.dataManager);
     },
     sortDirections: ["descend", "ascend"]
   },
   {
     title: "备注",
-    dataIndex: "remarks",
-    key: "remarks",
+    dataIndex: "remark",
+    key: "remark",
     className: "column-header",
-    width: 150
+    width: 130,
+    sorter: (a, b) => {
+      return a.remark.localeCompare(b.remark);
+    },
+    sortDirections: ["descend", "ascend"]
   },
   {
     title: "操作",
+    fixed: "right",
     key: "operation",
     scopedSlots: { customRender: "operation" }
   }
@@ -376,33 +533,27 @@ export default {
       }
     };
     return {
-      //修改表单的验证规则
       addrules: {
-        itemname: [{ required: true, trigger: "blur" }],
-        year: [{ required: true, trigger: "blur" }],
-        commitmentdept: [{ required: true, trigger: "blur" }],
-        datamanger: [{ required: true, trigger: "blur" }],
-        director: [{ required: true, trigger: "blur" }]
+        dataName: [{ required: true, trigger: "blur" }],
+        dataType: [{ required: true, trigger: "blur" }],
+        city: [{ required: true, trigger: "blur" }],
+        gis: [{ required: true, trigger: "blur" }]
       },
-      /* 新增项目台账表单 */
-      addForm: {
-        itemname: "",
-        year: "",
-        type: "",
-        commitmentdept: "",
-        owner: "",
-        datamanger: "",
-        director: "",
-        remarks: ""
+
+      updaterules: {
+        dataName: [{ required: true, trigger: "blur" }],
+        dataType: [{ required: true, trigger: "blur" }],
+        city: [{ required: true, trigger: "blur" }],
+        gis: [{ required: true, trigger: "blur" }]
       },
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
       routes: [
         {
-          breadcrumbName: "项目台账"
+          breadcrumbName: "数据查询"
         },
         {
-          breadcrumbName: "项目台账查询"
+          breadcrumbName: "空间数据查询"
         }
       ],
       tabListNoTitle: [
@@ -418,7 +569,7 @@ export default {
       key: "tab1",
       noTitleKey: "multipleSearch",
       columns,
-      select: "itemname",
+      select: "dataName",
       keyword: "",
       data: [],
       currentPage: 1,
@@ -460,23 +611,33 @@ export default {
       paramsList: [
         {
           key: 1,
-          pName: "itemname",
-          pLabel: "项目名称"
+          pName: "dataName",
+          pLabel: "数据名称"
         },
         {
           key: 2,
-          pName: "year",
-          pLabel: "年份"
+          pName: "city",
+          pLabel: "市县"
         },
         {
           key: 3,
-          pName: "commitmentdept",
-          pLabel: "承担部门"
+          pName: "belongItem",
+          pLabel: "所属项目"
         },
         {
           key: 4,
-          pName: "datamanger",
-          pLabel: "数据管理员"
+          pName: "provideCmpy",
+          pLabel: "提供单位"
+        },
+        {
+          key: 5,
+          pName: "provideDept",
+          pLabel: "提供部门"
+        },
+        {
+          key: 6,
+          pName: "dataType",
+          pLabel: "数据类型"
         }
       ],
       multipleForm: this.$form.createForm(this, { name: "advanced-search" }),
@@ -484,18 +645,92 @@ export default {
       searchState: "single",
       expand: false,
       stripe: true,
-      modalModifyVisible: false,
       modalAddVisible: false,
+      modalModifyVisible: false,
       modalDeleteVisible: false,
       selectedRecord: {},
+      formAdd: {
+        ysdm: "",
+        dataName: "",
+        dataType: "",
+        city: "",
+        provideCmpy: "",
+        provideDept: "",
+        provider: "",
+        phone: "",
+        dataFormat: "",
+        gis: "",
+        collectTime: "",
+        collectPer: "",
+        dataManager: "",
+        belongItem: "",
+        remark: ""
+      },
       formModify: {
         itemname: "123"
       }
     };
   },
   methods: {
-    linkfile() {
-      window.open("http:\\\\127.0.0.1:8081\\jdk8\\jdk1.8.0_144", "_blank");
+    addSpacedataRecord(addform) {
+      spacedata.add(addform).then(response => {
+        if (response.status === 200) {
+          this.openNotification(
+            ["success"],
+            "添加数据成功！",
+            "Record added successfully！"
+          );
+          this.modalAddVisible = false;
+          this.refreshColumns();
+        } else {
+          this.openNotification(
+            ["error"],
+            "添加数据失败！",
+            "Add record failed！"
+          );
+        }
+      });
+    },
+    openAddModal() {
+      this.modalAddVisible = true;
+    },
+    //页面跳转，进行文件浏览
+    showFile() {
+      //  window.location.href = "www.baidu.com";
+      /* let url = this.$router.resolve({
+        path: "www.baidu.com"
+      });
+      console.log(url);  */
+
+      // window.open("www.baidu.com", "_blank");
+
+      /*     const { href } = this.$router.resolve({
+        path: "www.baidu.com"
+      });
+ */
+      window.open("http://www.baidu.com", "_blank");
+      // 加入到指定路径
+      // this.$router.push({path: val})
+    },
+    handleChange({ file, fileList }) {
+      if (file.status !== "uploading") {
+        console.log(file, fileList);
+      }
+      if (file.status == "done") {
+        this.openNotification(
+          "success",
+          "数据批量导入成功！",
+          "Data import successful"
+        );
+        this.refreshColumns();
+      }
+      if (file.status == "error") {
+        this.openNotification(
+          "error",
+          "数据批量导入失败！",
+          "Data import failed"
+        );
+      }
     },
     //  切换标签页
     onTabChange(key, type) {
@@ -509,7 +744,7 @@ export default {
           page: this.queryParaSingle.pageNum,
           rows: this.queryParaSingle.pageSize
         };
-        inventory.search(query).then(response => {
+        spacedata.search(query).then(response => {
           console.log(response.data.rows);
           this.data = response.data.rows;
           this.pagination.total = response.data.total;
@@ -520,7 +755,7 @@ export default {
           rows: this.queryParaSingle.pageSize,
           [this.queryParaSingle.keyName]: this.queryParaSingle.keyValue
         };
-        inventory.search(query).then(response => {
+        spacedata.search(query).then(response => {
           this.data = response.data.rows;
           this.pagination.total = response.data.total;
         });
@@ -540,36 +775,9 @@ export default {
         }*/
       }
     },
-    openModal() {
-      this.modalAddVisible = true;
-    },
-    closeAddModal() {
-      this.modalAddVisible = false;
-    },
-    addRecordaa(addForm) {
-      this.modalAddVisible = false;
-      inventory.addrecord(addForm).then(response => {
-        if (response.status === 200) {
-          this.openNotification(
-            ["success"],
-            "添加数据成功！",
-            "Record added successfully！"
-          );
-          this.refreshColumns();
-        } else {
-          this.openNotification(
-            ["error"],
-            "添加数据失败！",
-            "Add record failed！"
-          );
-        }
-      });
-    },
     modify() {
       //alert("进入修改函数")
       console.log();
-      this.modalModifyVisible = false;
-
       /*       var modifyquery = {
         bsm: this.formModify.bsm,
         itemname: this.formModify.itemname,
@@ -581,7 +789,6 @@ export default {
         director: this.formModify.director,
         remark: this.formModify.remark
       }; */
-
       inventory
         .modify(
           this.formModify.bsm,
@@ -597,18 +804,20 @@ export default {
         .then(response => {
           //this.status = response.status;
           if (response.status === 200) {
-            this.openNotification(
-              "success",
-              "更新数据成功！",
-              "Update data successfully!"
-            );
-            this.refreshColumns();
-          } else {
-            this.openNotification(
-              "error",
-              "更新数据失败！",
-              "Update data failed"
-            );
+            if (response.status === 200) {
+              this.openNotification(
+                "success",
+                "更新数据成功！",
+                "Update data successfully!"
+              );
+              this.refreshColumns();
+            } else {
+              this.openNotification(
+                "error",
+                "更新数据失败！",
+                "Update data failed"
+              );
+            }
           }
         });
     },
@@ -649,14 +858,14 @@ export default {
           page: this.queryParaSingle.pageNum,
           rows: this.queryParaSingle.pageSize
         };
-        await inventory.search(datas).then(response => {
+        await documentdata.search(datas).then(response => {
           this.data = response.data.rows;
           this.pagination.total = response.data.total;
         });
       } else {
         datas["page"] = this.queryParaSingle.pageNum;
         datas["rows"] = this.queryParaSingle.pageSize;
-        await inventory.search(datas).then(response => {
+        await documentdata.search(datas).then(response => {
           this.data = response.data.rows;
           this.pagination.total = response.data.total;
         });
@@ -700,11 +909,28 @@ export default {
         placement: "bottomRight",
         description: chia
       });
+    },
+    refreshColumns() {
+      var query = {
+        page: this.queryParaSingle.pageNum,
+        rows: this.queryParaSingle.pageSize
+      };
+      spacedata.search(query).then(response => {
+        console.log(response.data.rows);
+        this.data = response.data.rows;
+        this.pagination.total = response.data.total;
+      });
+    },
+    closeModifyModal() {
+      this.modalModifyVisible = false;
+    },
+    closeAddModal() {
+      this.modalAddVisible = false;
     }
   },
   computed: {
     count() {
-      return this.expand ? 5 : 4;
+      return this.expand ? 8 : 4;
     }
   },
   updated() {

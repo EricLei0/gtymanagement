@@ -25,6 +25,19 @@
               />
             </a-col>
             <a-col :span="6"> </a-col>
+            <a-upload
+              :multiple="true"
+              action="http://192.168.2.200:8084/addressBook/excel"
+              enctype="multipart/form-data"
+              :format="['xlsx', 'xls']"
+              @change="handleChange"
+            >
+              <a-button
+                style="margin-left:230px;font-size:18px;height:40px;width:130px"
+              >
+                <a-icon type="upload" /> Excel导入
+              </a-button>
+            </a-upload>
           </a-row>
         </div>
         <div class="table-div">
@@ -107,10 +120,15 @@ const columns = [
   }
 ];
 
+/* const headers = {
+  
+} */
+
 export default {
   components: {
     TitleHeader
   },
+
   data() {
     return {
       routes: [
@@ -155,6 +173,11 @@ export default {
     };
   },
   methods: {
+    handleChange({ file, fileList }) {
+      if (file.status !== "uploading") {
+        console.log(file, fileList);
+      }
+    },
     async getDataTable() {
       if (this.keyword === "") {
         var query = {
