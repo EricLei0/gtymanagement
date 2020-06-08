@@ -135,6 +135,10 @@ export default {
           window.sessionStorage.setItem("selectedKeys", ["/inventory/search"]);
           window.sessionStorage.setItem("username", values.username);
           this.GLOBAL.username = values.username;
+          /*           if (values.username === "user") {
+            this.GLOBAL.ifadmin = false;
+            console.log("GLOBAL----"+this.GLOBAL.ifadmin)
+          } */
         }
       });
     }

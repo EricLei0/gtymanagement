@@ -27,10 +27,11 @@
             <a-col :span="6"> </a-col>
             <a-upload
               :multiple="true"
-              action="http://192.168.2.200:8084/addressBook/excel"
+              action="/api/addressBook/excel"
               enctype="multipart/form-data"
               :format="['xlsx', 'xls']"
               @change="handleChange"
+              v-if="columnsmodify"
             >
               <a-button
                 style="margin-left:230px;font-size:18px;height:40px;width:130px"
@@ -131,6 +132,7 @@ export default {
 
   data() {
     return {
+      columnsmodify: true,
       routes: [
         {
           breadcrumbName: "信息查询"
@@ -224,6 +226,9 @@ export default {
   },
   created() {
     this.getDataTable();
+    /*     if (this.GLOBAL.username === "user") {
+      this.columnsmodify = false;
+    } */
   },
   updated() {
     if (this.stripe) {

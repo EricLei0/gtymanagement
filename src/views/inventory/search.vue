@@ -45,15 +45,30 @@
                 />
               </div>
             </a-col> -->
-            <a-col :span="6">
+            <a-col :span="3">
               <a-button
                 type="primary"
-                style="margin-left:315px;height:38px"
+                style="margin-left:40px;height:38px"
                 @click="openModal"
+                v-if="columnsmodify"
               >
                 添加
               </a-button>
             </a-col>
+            <a-upload
+              :multiple="true"
+              action="/api/itemInventory/excel"
+              enctype="multipart/form-data"
+              @change="handleChange"
+              v-if="columnsmodify"
+            >
+              <!--  :format="['xlsx', 'xls']" -->
+              <a-button
+                style="margin-left:55px;font-size:18px;height:40px;width:130px"
+              >
+                <a-icon type="upload" /> Excel导入
+              </a-button>
+            </a-upload>
           </a-row>
         </div>
         <div v-else-if="noTitleKey === 'multipleSearch'">
@@ -113,8 +128,12 @@
             rowKey="bsm"
           >
             <span slot="operation" slot-scope="record">
-              <a @click="() => setModifyVisible(true, record)">
-                修改
+              <a
+                @click="() => setModifyVisible(true, record)"
+                v-if="columnsmodify"
+              >
+                <!-- 默认为true（显示），在created函数判断是否普通用户，如果是，则赋值false(隐藏)-->
+                > 修改
               </a>
               <a-divider type="vertical" />
 
@@ -202,10 +221,10 @@
                   <a-form-model-item label="承担部门" prop="commitmentdept">
                     <a-input v-model="addForm.commitmentdept" />
                   </a-form-model-item>
-                  <a-form-model-item label="业主单位" prop="owner">
+                  <a-form-model-item label="业主单位">
                     <a-input v-model="addForm.owner" />
                   </a-form-model-item>
-                  <a-form-model-item label="数据管理员" prop="datamanger">
+                  <a-form-model-item label="数据管理员">
                     <a-input v-model="addForm.datamanger" />
                   </a-form-model-item>
                   <a-form-model-item label="项目类型">
@@ -328,6 +347,9 @@ export default {
   created() {
     //  console.log(TitleHeader);
     this.getDataSingle();
+    /*     if (this.GLOBAL.username === "user") {
+      this.columnsmodify = false;
+    } */
   },
   data() {
     this.components = {
@@ -376,6 +398,7 @@ export default {
       }
     };
     return {
+      columnsmodify: true,
       //修改表单的验证规则
       addrules: {
         itemname: [{ required: true, trigger: "blur" }],
@@ -494,6 +517,23 @@ export default {
     };
   },
   methods: {
+    handleChange({ file, fileList }) {
+      //上传文件获取当前文件的状态函数
+      if (file.status !== "uploading") {
+        console.log(file, fileList);
+      }
+      if (file.status == "done") {
+        this.openNotification(
+          "success",
+          "文件上传成功！",
+          "Data import successful"
+        );
+        this.refreshColumns();
+      }
+      if (file.status == "error") {
+        this.openNotification("error", "文件上传失败！", "Data import failed");
+      }
+    },
     linkfile() {
       window.open("http:\\\\127.0.0.1:8081\\jdk8\\jdk1.8.0_144", "_blank");
     },

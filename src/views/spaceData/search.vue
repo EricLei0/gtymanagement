@@ -53,16 +53,18 @@
                 type="primary"
                 style="margin-left:40px;height:38px"
                 @click="openAddModal"
+                v-if="columnsmodify"
               >
                 添加
               </a-button>
             </a-col>
             <a-upload
               :multiple="true"
-              action="http://192.168.2.200:8084/spaceData/excel"
+              action="/api/spaceData/excel"
               enctype="multipart/form-data"
               :format="['xlsx', 'xls']"
               @change="handleChange"
+              v-if="columnsmodify"
             >
               <a-button
                 style="margin-left:55px;font-size:18px;height:40px;width:130px"
@@ -130,8 +132,12 @@
             rowKey="bsm"
           >
             <span slot="operation" slot-scope="record">
-              <a @click="() => setModifyVisible(true, record)">
-                修改
+              <a
+                @click="() => setModifyVisible(true, record)"
+                v-if="columnsmodify"
+              >
+                <!-- 默认为true（显示），在created函数判断是否普通用户，如果是，则赋值false(隐藏)-->
+                > 修改
               </a>
               <a-divider type="vertical" />
               <a @click="() => setDeleteVisible(true, record)">删除</a>
@@ -485,6 +491,9 @@ export default {
   created() {
     //  console.log(TitleHeader);
     this.getDataSingle();
+    /*     if (this.GLOBAL.username === "user") {  
+      this.columnsmodify = false;
+    } */
   },
   data() {
     this.components = {
@@ -533,6 +542,7 @@ export default {
       }
     };
     return {
+      columnsmodify: true,
       addrules: {
         dataName: [{ required: true, trigger: "blur" }],
         dataType: [{ required: true, trigger: "blur" }],
