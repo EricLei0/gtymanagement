@@ -22,7 +22,7 @@
         theme="dark"
         :defaultopenkeys="['/datainformation']"
       >
-        <a-sub-menu key="/work">
+        <!--         <a-sub-menu key="/work">
           <span slot="title">
             <a-icon type="appstore" /><span>我的工作</span>
           </span>
@@ -32,7 +32,7 @@
           <a-menu-item key="/work/myproject">
             我的项目
           </a-menu-item>
-        </a-sub-menu>
+        </a-sub-menu> -->
         <!-- 
         <a-sub-menu key="/inventory">
           <span slot="title">

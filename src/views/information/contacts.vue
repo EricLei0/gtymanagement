@@ -2,8 +2,14 @@
   <div>
     <title-header :routes="routes" class="header-style"></title-header>
     <div class="content-frame">
-      <a-card style="width: 100%" :bordered="false">
-        <div class="search-box">
+      <a-card
+        style="width: 100%"
+        :tab-list="tabListNoTitle"
+        :active-tab-key="noTitleKey"
+        :bordered="false"
+        @tabChange="key => onTabChange(key, 'noTitleKey')"
+      >
+        <div v-if="noTitleKey === 'singleSearch'" class="search-box">
           <a-row>
             <a-col :span="3">
               <a-select v-model="select" size="large" style="width:100%">
@@ -40,6 +46,53 @@
               </a-button>
             </a-upload>
           </a-row>
+        </div>
+        <div v-if="noTitleKey === 'multipleSearch'">
+          <a-form
+            class="advanced-search-form"
+            :form="multipleForm"
+            :label-col="{ span: 5 }"
+            :wrapper-col="{ span: 12 }"
+            @submit="handleAdvanceSearch"
+          >
+            <a-row :gutter="24">
+              <a-col
+                v-for="item in paramsList"
+                :key="item.key"
+                :span="8"
+                :style="{ display: item.key < count ? 'block' : 'none' }"
+              >
+                <a-form-item :label="`${item.pLabel}`">
+                  <a-input
+                    v-decorator="[`${item.pName}`]"
+                    placeholder="请输入关键字"
+                    style="width: 100%"
+                    size="large"
+                  />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :span="24" :style="{ textAlign: 'right' }">
+                <a-button type="primary" html-type="submit" size="large">
+                  <a-icon type="search" />查 询
+                </a-button>
+                <a-button
+                  :style="{ marginLeft: '24px' }"
+                  @click="handleReset"
+                  size="large"
+                >
+                  <a-icon type="setting" />重 置
+                </a-button>
+                <a
+                  :style="{ marginLeft: '24px', fontSize: '12px' }"
+                  @click="toggle"
+                >
+                  展开/折叠 <a-icon :type="expand ? 'up' : 'down'" />
+                </a>
+              </a-col>
+            </a-row>
+          </a-form>
         </div>
         <div class="table-div">
           <a-table
@@ -132,6 +185,43 @@ export default {
 
   data() {
     return {
+      //  组合查询表单对象
+      queryParaSingle: {
+        keyName: "itemname",
+        keyValue: "",
+        pageNum: 1,
+        pageSize: 10
+      },
+      expand: false,
+      paramsList: [
+        {
+          key: 1,
+          pName: "name",
+          pLabel: "姓名"
+        },
+        {
+          key: 2,
+          pName: "dept",
+          pLabel: "部门"
+        },
+        {
+          key: 3,
+          pName: "duty",
+          pLabel: "职务"
+        }
+      ],
+      multipleForm: this.$form.createForm(this, { name: "advanced-search" }),
+      noTitleKey: "multipleSearch",
+      tabListNoTitle: [
+        {
+          key: "singleSearch",
+          tab: "一般查询"
+        },
+        {
+          key: "multipleSearch",
+          tab: "组合查询"
+        }
+      ],
       columnsmodify: true,
       routes: [
         {
@@ -175,6 +265,55 @@ export default {
     };
   },
   methods: {
+    //  折叠与展开
+    toggle() {
+      this.expand = !this.expand;
+    },
+    handleReset() {
+      this.multipleForm.resetFields();
+    },
+
+    //  组合查询
+    handleAdvanceSearch(e) {
+      e.preventDefault();
+      var values = this.multipleForm.getFieldsValue();
+      var params = {};
+      for (var i in values) {
+        if (values[i] !== undefined && values[i] !== "") {
+          params[i] = values[i];
+        }
+      }
+      this.multipleParams = params;
+      this.queryParaSingle.pageNum = 1;
+      this.searchState = "multiple";
+      this.getDataMultiple(params);
+    },
+    //  获取组合查询结果
+    async getDataMultiple(datas) {
+      console.log(datas);
+      if (JSON.stringify(datas) == "{}") {
+        datas = {
+          page: this.queryParaSingle.pageNum,
+          rows: this.queryParaSingle.pageSize
+        };
+        await contacts.search(datas).then(response => {
+          this.data = response.data.rows;
+          this.pagination.total = response.data.total;
+        });
+      } else {
+        datas["page"] = this.queryParaSingle.pageNum;
+        datas["rows"] = this.queryParaSingle.pageSize;
+        await contacts.search(datas).then(response => {
+          this.data = response.data.rows;
+          this.pagination.total = response.data.total;
+        });
+      }
+    },
+    //  切换标签页
+    onTabChange(key, type) {
+      //  console.log(key, type);
+      this[type] = key;
+    },
     handleChange({ file, fileList }) {
       if (file.status !== "uploading") {
         console.log(file, fileList);
@@ -233,6 +372,11 @@ export default {
   updated() {
     if (this.stripe) {
       this.renderStripe();
+    }
+  },
+  computed: {
+    count() {
+      return this.expand ? 7 : 4; //修改组合查询表单控件数
     }
   }
 };

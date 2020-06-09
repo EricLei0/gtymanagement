@@ -127,18 +127,19 @@
             :pagination="pagination"
             rowKey="bsm"
           >
-            <span slot="operation" slot-scope="record">
-              <a
+            <span slot="operation" slot-scope="">
+              <!-- slot-scope="record" //record为当前记录 -->
+              <!--               <a
                 @click="() => setModifyVisible(true, record)"
                 v-if="columnsmodify"
               >
-                <!-- 默认为true（显示），在created函数判断是否普通用户，如果是，则赋值false(隐藏)-->
-                > 修改
-              </a>
+              修改
+              </a> -->
+              <!-- 默认为true（显示），在created函数判断是否普通用户，如果是，则赋值false(隐藏)-->
               <a-divider type="vertical" />
 
-              <a @click="() => setDeleteVisible(true, record)">删除</a>
-
+              <!-- <a @click="() => setDeleteVisible(true, record)">删除</a>
+ -->
               <!-- 修改项目台账弹窗 -->
               <a-modal
                 v-model="modalModifyVisible"
@@ -146,7 +147,7 @@
                 width="720px"
               >
                 <template slot="footer">
-                  <a-button key="back">
+                  <a-button key="back" @click="closemodify">
                     取消
                   </a-button>
                   <a-button type="primary" key="submit" @click="modify">
@@ -517,6 +518,10 @@ export default {
     };
   },
   methods: {
+    closemodify() {
+      //取消修改窗体
+      this.modalModifyVisible = false;
+    },
     handleChange({ file, fileList }) {
       //上传文件获取当前文件的状态函数
       if (file.status !== "uploading") {

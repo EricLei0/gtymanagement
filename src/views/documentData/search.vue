@@ -123,14 +123,14 @@
           </a-form>
         </div>
 
-        <div v-else-if="noTitleKey === 'uploadCard'" style="height:300px">
+        <div v-else-if="noTitleKey === 'uploadCard'" style="height:280px">
           <!--      <h1>上传！</h1> -->
           <!-- <template> -->
-          <div style="float:left;margin-left:150px;">
+          <div style="float:left;margin-left:50px;">
             <span style="fontSize:18px">市： </span>
             <a-select
               mode="tags"
-              style="width: 230PX;fontSize:16px"
+              style="width: 210PX;fontSize:16px"
               placeholder="Tags Mode"
               @change="selectChange1"
               @mouseenter="() => requestSelectData('first')"
@@ -145,7 +145,7 @@
             <span style="fontSize:18px">县： </span>
             <a-select
               mode="tags"
-              style="width: 230PX;fontSize:16px"
+              style="width: 210PX;fontSize:16px"
               placeholder="Tags Mode"
               @change="selectChange2"
               @mouseenter="() => requestSelectData('second')"
@@ -160,7 +160,7 @@
             <span style="fontSize:18px">单位： </span>
             <a-select
               mode="tags"
-              style="width: 230PX;fontSize:16px"
+              style="width: 210PX;fontSize:16px"
               placeholder="Tags Mode"
               @change="selectChange3"
               @mouseenter="() => requestSelectData('third')"
@@ -173,6 +173,19 @@
             </a-select>
           </div>
 
+          <div style="float:left;margin-left:50px;">
+            <span style="fontSize:18px">收集人： </span>
+            <a-select
+              mode="tags"
+              style="width: 210PX;fontSize:16px"
+              placeholder="Tags Mode"
+              @change="seleChange_collectperson"
+            >
+              <!--                 <a-select-option v-for="item in selectdata1" :key="item">
+                  {{ item }}
+                </a-select-option> -->
+            </a-select>
+          </div>
           <a-upload
             :multiple="true"
             action="/api/documentData/upload"
@@ -197,7 +210,7 @@
             :columns="columns"
             :data-source="data"
             :pagination="pagination"
-            :scroll="{ x: 3000, y: 600 }"
+            :scroll="{ x: 2550, y: 600 }"
             rowKey="bsm"
           >
             <span slot="operation" slot-scope="record">
@@ -226,7 +239,7 @@
                 width="720px"
               >
                 <template slot="footer">
-                  <a-button key="back">
+                  <a-button key="back" @click="closemodify">
                     取消
                   </a-button>
                   <a-button type="primary" key="submit" @click="modify">
@@ -249,9 +262,9 @@
                   <a-form-model-item label="所属项目">
                     <a-input v-model="formModify.belongItem" />
                   </a-form-model-item>
-                  <a-form-model-item label="文件路径" prop="path">
+                  <!--                   <a-form-model-item label="文件路径" prop="path">
                     <a-input v-model="formModify.path" />
-                  </a-form-model-item>
+                  </a-form-model-item> -->
                   <a-form-model-item label="提供单位">
                     <a-input v-model="formModify.provideCmpy" />
                   </a-form-model-item>
@@ -406,7 +419,7 @@ const columns = [
     sortDirections: ["descend", "ascend"]
   },
   {
-    title: "文档名称",
+    title: "数据名称",
     fixed: "left",
     width: 370,
     dataIndex: "name",
@@ -567,14 +580,14 @@ const columns = [
     },
     sortDirections: ["descend", "ascend"]
   },
-
+  /* 
   {
     title: "文档路径",
     dataIndex: "path",
     key: "path",
     className: "column-header",
     width: 500
-  },
+  }, */
   {
     title: "操作",
     fixed: "right",
@@ -737,20 +750,25 @@ export default {
         {
           key: 2,
           pName: "city",
-          pLabel: "市县"
+          pLabel: "市"
         },
         {
           key: 3,
+          pName: "county",
+          pLabel: "县"
+        },
+        {
+          key: 4,
           pName: "belongItem",
           pLabel: "所属项目"
         },
         {
-          key: 4,
+          key: 5,
           pName: "provideCmpy",
           pLabel: "提供单位"
         },
         {
-          key: 5,
+          key: 6,
           pName: "provideDept",
           pLabel: "提供部门"
         }
@@ -771,6 +789,7 @@ export default {
       selectdata2: {},
       selectdata3: {},
       selectedform: {
+        //获取各层级目录的表单
         path: "",
         first: "",
         second: "",
@@ -795,9 +814,12 @@ export default {
         remarks: ""
       },
       select_director: {
+        //上传文件时发送给后台的表单
         first: "",
         second: "",
-        third: ""
+        third: "",
+        collectPerson: "",
+        collectTime: ""
       },
       formModify: {
         itemname: "123"
@@ -806,17 +828,20 @@ export default {
   },
 
   methods: {
+    closemodify() {
+      this.modalModifyVisible = false;
+    },
     requestSelectData(type) {
       this.selectedform.type = type;
       if (type === "first") {
         documentdata.searchdirectory(this.selectedform).then(response => {
           if (response.status === 200) {
             this.selectdata1 = response.data;
-            this.openNotification(
+            /*             this.openNotification(
               ["success"],
               "获取目录成功！",
               "Record added successfully！"
-            );
+            ); */
 
             this.refreshColumns();
           } else {
@@ -834,11 +859,11 @@ export default {
         documentdata.searchdirectory(this.selectedform).then(response => {
           if (response.status === 200) {
             this.selectdata2 = response.data;
-            this.openNotification(
+            /*             this.openNotification(
               ["success"],
               "获取目录成功！",
               "Record added successfully！"
-            );
+            ); */
 
             this.refreshColumns();
           } else {
@@ -860,11 +885,11 @@ export default {
         documentdata.searchdirectory(this.selectedform).then(response => {
           if (response.status === 200) {
             this.selectdata3 = response.data;
-            this.openNotification(
+            /*             this.openNotification(
               ["success"],
               "获取目录成功！",
               "Record added successfully！"
-            );
+            ); */
 
             this.refreshColumns();
           } else {
@@ -872,6 +897,10 @@ export default {
           }
         });
       }
+    },
+    seleChange_collectperson(selectvalue) {
+      console.log("---collectPerson---" + `selected ${selectvalue}`);
+      this.select_director.collectPerson = `${selectvalue}`;
     },
 
     selectChange1(selectvalue) {
@@ -964,6 +993,17 @@ export default {
         description: chia
       });
     },
+    upload_openNotification() {
+      this.$notification.open({
+        message: "warm prompt",
+        description:
+          "上传文件前需要先选择/填写市、县、等信息，详细命名文件名！上传成功将自动生成数据记录至数据库！",
+        style: {
+          width: "600px",
+          marginLeft: `${335 - 600}px`
+        }
+      });
+    },
     testplayfile() {
       this.openNotification(
         "warning",
@@ -1013,7 +1053,12 @@ export default {
       param.append("name", record.name);
       param.append("format", record.dataFormat);
       param.append("providept", record.provideDept);
-
+      /*       if (record.provideDept != null && record.provideDept != "") {
+        alert("提供部门为空");
+        param.append("providept", "0");
+      } else {
+        param.append("providept", record.provideDept);
+      } */
       var pathstr = record.path;
       var pathstrsize = pathstr.size;
       //var partten= '///';
@@ -1106,6 +1151,11 @@ export default {
 
     //  切换标签页
     onTabChange(key, type) {
+      if (key === "uploadCard") {
+        //alert("upload");
+        //this.openNotification("success",);
+        this.upload_openNotification();
+      }
       //  console.log(key, type);
       this[type] = key;
     },
@@ -1301,7 +1351,7 @@ export default {
   },
   computed: {
     count() {
-      return this.expand ? 6 : 4;
+      return this.expand ? 7 : 4; //修改组合查询表单控件数
     }
   },
   updated() {
