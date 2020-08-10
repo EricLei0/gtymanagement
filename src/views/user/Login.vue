@@ -113,21 +113,23 @@ export default {
       this.form.validateFields(async (err, values) => {
         if (!err) {
           console.log("Received values of form: ", values);
-          /*user.login({}, values).then(response => {
-            if (response.data.success != true) {
-              return this.$message.error("登录失败");
-            } else {
+          /*            user.login(values,{}).then(response => {
+            if (response.data.status === "200") {
               this.$message.success("登录成功");
-              window.sessionStorage.setItem("token", response.data.data.token);
-              this.$router.push("/inventory/search");
-              window.sessionStorage.setItem("openKeys", ["/inventory"]);
+              window.sessionStorage.setItem("token", response.data);
+              this.$router.push("/documentdata/search");
+              window.sessionStorage.setItem("openKeys", ["/datainformation"]);
               window.sessionStorage.setItem("selectedKeys", [
-                "/inventory/search"
+                "/documentdata/search"
               ]);
               window.sessionStorage.setItem("username", values.username);
               this.GLOBAL.username = values.username;
+
+              //return this.$message.error("登录失败");
+            } else {
+              return this.$message.error("用户名或密码错误！");
             }
-          });*/
+          });  */
           this.$message.success("登录成功");
           window.sessionStorage.setItem("token", "xxxx");
           this.$router.push("/inventory/search");

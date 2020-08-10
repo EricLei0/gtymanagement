@@ -12,8 +12,11 @@ import request from "../utils/request";
 export default {
   login(parameter, data) {
     return request({
-      url: "/auth/login",
+      url: "/acount/login",
       method: "post",
+      header: {
+        "Content-Type": "application/json"
+      },
       params: parameter,
       data: data
     });

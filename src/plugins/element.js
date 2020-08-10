@@ -23,9 +23,13 @@ import {
   Divider,
   Modal,
   FormModel,
-  Upload
+  Upload,
+  Steps,
+  Cascader
 } from "ant-design-vue";
-
+//import { Step } from "ant-design-vue/types/steps/step";
+Vue.use(Cascader);
+Vue.use(Steps);
 Vue.use(Button);
 Vue.use(Form);
 Vue.use(Input);

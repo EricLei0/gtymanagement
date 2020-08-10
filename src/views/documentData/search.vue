@@ -123,85 +123,193 @@
           </a-form>
         </div>
 
-        <div v-else-if="noTitleKey === 'uploadCard'" style="height:280px">
-          <!--      <h1>上传！</h1> -->
-          <!-- <template> -->
-          <div style="float:left;margin-left:50px;">
-            <span style="fontSize:18px">市： </span>
-            <a-select
-              mode="tags"
-              style="width: 210PX;fontSize:16px"
-              placeholder="Tags Mode"
-              @change="selectChange1"
-              @mouseenter="() => requestSelectData('first')"
-            >
-              <a-select-option v-for="item in selectdata1" :key="item">
-                {{ item }}
-              </a-select-option>
-            </a-select>
-          </div>
-
-          <div style="float:left;margin-left:50px">
-            <span style="fontSize:18px">县： </span>
-            <a-select
-              mode="tags"
-              style="width: 210PX;fontSize:16px"
-              placeholder="Tags Mode"
-              @change="selectChange2"
-              @mouseenter="() => requestSelectData('second')"
-            >
-              <a-select-option v-for="item in selectdata2" :key="item">
-                {{ item }}
-              </a-select-option>
-            </a-select>
-          </div>
-
-          <div style="float:left;margin-left:50px">
-            <span style="fontSize:18px">单位： </span>
-            <a-select
-              mode="tags"
-              style="width: 210PX;fontSize:16px"
-              placeholder="Tags Mode"
-              @change="selectChange3"
-              @mouseenter="() => requestSelectData('third')"
-            >
-              <!--             <a-select-option v-for="(item,i) in selectdata" :key="item.name+i" >
-              {{item.name+i}} -->
-              <a-select-option v-for="item in selectdata3" :key="item">
-                {{ item }}
-              </a-select-option>
-            </a-select>
-          </div>
-
-          <div style="float:left;margin-left:50px;">
-            <span style="fontSize:18px">收集人： </span>
-            <a-select
-              mode="tags"
-              style="width: 210PX;fontSize:16px"
-              placeholder="Tags Mode"
-              @change="seleChange_collectperson"
-            >
-              <!--                 <a-select-option v-for="item in selectdata1" :key="item">
+        <div v-else-if="noTitleKey === 'uploadCard'" style="height:560px">
+          <!-- <div style="float:left;margin-left:50px;">
+              <span style="fontSize:18px">市： </span>
+              <a-select
+                mode="tags" 
+                style="width: 210PX;fontSize:16px"
+                placeholder="Tags Mode"
+                @change="selectChange1" 
+                @mouseenter="() => requestSelectData('first')"
+              >
+                <a-select-option v-for="item in selectdata1" :key="item">
                   {{ item }}
-                </a-select-option> -->
-            </a-select>
-          </div>
+                </a-select-option>
+              </a-select>
+            </div>
+
+            <div style="float:left;margin-left:50px">
+              <span style="fontSize:18px">县： </span>
+              <a-select
+                mode="tags"
+                style="width: 210PX;fontSize:16px"
+                placeholder="Tags Mode"
+                @change="selectChange2"
+                @mouseenter="() => requestSelectData('second')"
+              >
+                <a-select-option v-for="item in selectdata2" :key="item">
+                  {{ item }}
+                </a-select-option>
+              </a-select>
+            </div>
+
+            <div style="float:left;margin-left:50px"> 
+              <span style="fontSize:18px">单位： </span>
+              <a-select
+                mode="tags"
+                style="width: 210PX;fontSize:16px"
+                placeholder="Tags Mode"
+                @change="selectChange3"
+                @mouseenter="() => requestSelectData('third')"
+              >
+                <a-select-option v-for="item in selectdata3" :key="item">
+                  {{ item }}
+                </a-select-option>
+              </a-select>
+            </div>
+
+            <div style="float:left;margin-left:50px;">
+              <span style="fontSize:18px">收集人： </span>
+              <a-select
+                mode="tags"
+                style="width: 210PX;fontSize:16px"
+                placeholder="Tags Mode"
+                @change="seleChange_collectperson"                
+              >
+              </a-select>
+            </div>
           <a-upload
             :multiple="true"
             action="/api/documentData/upload"
             enctype="multipart/form-data"
             :format="['xlsx', 'xls']"
             :data="select_director"
-            @change="handleChange"
+            @change="handleChange"   
           >
             <a-button
               style="margin-left:55px;font-size:18px;height:40px;width:130px"
-            >
-              <a-icon type="upload" /> 选择文件
+            >   
+              <a-icon type="upload" /> 选择文件 
             </a-button>
-          </a-upload>
+          </a-upload> -->
 
-          <!--   </template> -->
+          <div>
+            <h3 style="display:block;margin-bottom:15px">步骤一：</h3>
+            <div
+              style="width:100%;background-color:#F5F5F5;margin-bottom:20px;padding-bottom:10px"
+            >
+              <div
+                style="margin-right:auto;margin-left:auto;width:100%;padding-left:20px;padding-top:20px"
+              >
+                <label style="width:90px;display:inline-block"
+                  >所属区域：</label
+                >
+                <a-cascader
+                  :options="options_cityAndCounty"
+                  :load-data="loadData_cityAndCounty"
+                  placeholder="必填"
+                  change-on-select
+                  @change="onChange_cityAndCounty"
+                  style="width:250px"
+                />
+
+                <label style="margin-left:60px;width:90px;display:inline-block"
+                  >提供单位：</label
+                >
+                <!-- :filter-option="filterOption" -->
+                <!-- option-filter-prop="children" -->
+                <!-- autoClearSearchValue=false -->
+
+                <a-select
+                  show-search
+                  filterOption="false"
+                  :disabled="uploadInput_disable.proCmpy"
+                  style="width: 250px"
+                  :allowClear="true"
+                  mode="tags"
+                  @focus="handleFocus"
+                  @blur="handleBlur"
+                  @change="selectChange2"
+                  @mouseenter="() => requestSelectData('second')"
+                >
+                  <a-select-option v-for="item in selectdata2" :key="item">
+                    {{ item }}
+                  </a-select-option>
+                </a-select>
+
+                <label style="margin-left:60px;width:90px;display:inline-block"
+                  >提供部门：</label
+                >
+                <a-select
+                  show-search
+                  style="width: 250px"
+                  :allowClear="true"
+                  :disabled="uploadInput_disable.proDept"
+                  mode="tags"
+                  filterOption="false"
+                  @focus="handleFocus_dept"
+                  @blur="handleBlur_dept"
+                  @change="selectChange3"
+                  @mouseenter="() => requestSelectData('third')"
+                >
+                  <a-select-option v-for="item in selectdata3" :key="item">
+                    {{ item }}
+                  </a-select-option>
+                </a-select>
+              </div>
+              <div
+                style="margin-right:auto;margin-left:auto;margin-bottom:15px;width:100%;padding-left:20px;padding-top:20px"
+              >
+                <label style="width:90px;display:inline-block">专题：</label>
+                <input
+                  type="text"
+                  id="Special_upload"
+                  style="height:32px;border-radius: 4px;border-style:solid;
+                  border-width:1px;border-color:	#D3D3D3;width:250px"
+                />
+
+                <!--                   <input type="text" id="proCmpy_upload" style="height:32px;border-radius: 4px;border-style:solid;
+                  border-width:1px;border-color:	#D3D3D3;width:250px"/>  -->
+
+                <label style="margin-left:60px;width:90px;display:inline-block"
+                  >收集人:</label
+                >
+                <input
+                  type="text"
+                  id="collectPerson"
+                  placeholder="必填"
+                  v-model="select_director.collectPerson"
+                  @change="changeCollectperson"
+                  style="height:32px;border-radius: 4px;border-style:solid;
+                  border-width:1px;border-color:	#D3D3D3;width:250px"
+                />
+              </div>
+            </div>
+
+            <h3 style="display:block;margin-bottom:15px">步骤二：</h3>
+
+            <a-upload-dragger
+              name="file"
+              style="display:block"
+              :multiple="true"
+              action="/api/documentData/upload"
+              :data="select_director"
+              @change="handleChangeaa"
+              :beforeUpload="BeforeUpload"
+            >
+              <p class="ant-upload-drag-icon">
+                <a-icon type="inbox" />
+              </p>
+              <p class="ant-upload-text">
+                点击或者拖拽文件到此处进行上传！
+              </p>
+              <p class="ant-upload-hint">
+                Support for a single or bulk upload. Strictly prohibit from
+                uploading company data or other band files
+              </p>
+            </a-upload-dragger>
+          </div>
         </div>
       </a-card>
       <a-card style="width: 100%;" :bordered="false">
@@ -392,6 +500,7 @@
 <script>
 import TitleHeader from "@/components/TitleHeader";
 import Vue from "vue";
+//import reqwest  from "../../utils/request";
 import VueDraggableResizable from "vue-draggable-resizable";
 import documentdata from "@/api/documentdata";
 
@@ -608,6 +717,7 @@ export default {
   },
 
   created() {
+    //alert(window.location.host);
     //  console.log(TitleHeader);
     this.getDataSingle();
     /*     if (this.GLOBAL.username === "user") {
@@ -662,6 +772,43 @@ export default {
     };
 
     return {
+      uploadInput_disable: {
+        proCmpy: false,
+        proDept: false
+      },
+      win_host: "",
+      fileList: [],
+      upload: false,
+      form_layout: "inline",
+      options_cityAndCounty: [
+        {
+          value: "国家",
+          label: "国家",
+          isLeaf: true
+        },
+
+        {
+          value: "自治区",
+          label: "自治区",
+          isLeaf: true
+        },
+        {
+          value: "柳州市",
+          label: "柳州市",
+          isLeaf: false
+        },
+        {
+          value: "崇左市",
+          label: "崇左市",
+          isLeaf: false
+        },
+        {
+          value: "北海市",
+          label: "北海市",
+          isLeaf: false
+        }
+      ],
+      current: 0, //上传文件步骤位置值
       addrules: {
         name: [{ required: true, trigger: "blur" }],
         city: [{ required: true, trigger: "blur" }],
@@ -759,8 +906,8 @@ export default {
         },
         {
           key: 4,
-          pName: "belongItem",
-          pLabel: "所属项目"
+          pName: "collectPerson",
+          pLabel: "收集人"
         },
         {
           key: 5,
@@ -828,6 +975,132 @@ export default {
   },
 
   methods: {
+    changeCollectperson() {},
+    //提供单位（新）
+    handleBlur() {
+      console.log("blur");
+    },
+    handleFocus() {
+      console.log("focus");
+    },
+
+    handleBlur_dept() {
+      console.log("blur");
+    },
+    handleFocus_dept() {
+      console.log("focus");
+    },
+    filterOption(input, option) {
+      return (
+        option.componentOptions.children[0].text
+          .toLowerCase()
+          .indexOf(input.toLowerCase()) >= 0
+      );
+    },
+
+    handleChangeaa(info) {
+      const status = info.file.status;
+      if (status !== "uploading") {
+        console.log(info.file, info.fileList);
+      }
+      if (status === "done") {
+        this.$message.success(`${info.file.name} file uploaded successfully.`);
+      } else if (status === "error") {
+        this.$message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+    BeforeUpload(file) {
+      console.log(file);
+      /*       alert(
+        this.select_director.first +
+          "\n" +
+          this.select_director.second+
+          "\n"+
+          this.select_director.collectPerson +
+          "\n"
+      ); */
+      if (
+        this.select_director.first == null ||
+        this.select_director.first == "" ||
+        this.select_director.collectPerson == null ||
+        this.select_director.collectPerson == ""
+      ) {
+        return new Promise((resolve, reject) => {
+          //alert("请填写信息！");
+          // message.error('照片格式有误！');
+          this.$message.error("请先填写所属区域和收集人再上传！");
+          reject(file);
+        });
+        //return false;
+      }
+    },
+    beforeUpload(file) {
+      this.fileList = [...this.fileList, file];
+      return false;
+    },
+    loadData_cityAndCounty(selectedOptions) {
+      // alert("aa");
+      const targetOption = selectedOptions[selectedOptions.length - 1];
+      // var jsonstr="[{'name':'a','value':1},{'name':'b','value':2}]";
+      // var jsonstr = [];
+
+      let arryform = new Array();
+      for (let index = 0; index < selectedOptions.length; index++) {
+        arryform[index] = selectedOptions[index].label;
+      }
+      // let form=;
+      var resultarry = new Array();
+      var jsonarray = [];
+      let param = new URLSearchParams();
+      param.append("arryform", arryform);
+      documentdata.getcityandcounty(param).then(response => {
+        if (response.status === 200) {
+          for (let index = 0; index < response.data.rows.length; index++) {
+            var arr = {
+              label: response.data.rows[index].county,
+              value: response.data.rows[index].county
+            };
+            jsonarray.push(arr);
+          }
+          console.log("rows" + response.data.rows);
+        } else {
+          this.$message.error("错误！");
+        }
+      });
+
+      console.log();
+      console.log(jsonarray);
+      //alert("aa");
+
+      console.log("result" + resultarry);
+
+      targetOption.loading = true;
+
+      // load options lazily
+      setTimeout(() => {
+        targetOption.loading = false;
+        targetOption.children = jsonarray;
+        targetOption.children.children = jsonarray;
+        this.options_cityAndCounty = [...this.options_cityAndCounty];
+      }, 400);
+    },
+    onChange_cityAndCounty(value) {
+      this.select_director.first = value.join("/");
+
+      if (value == "国家" || value == "自治区") {
+        this.uploadInput_disable.proCmpy = true;
+        this.uploadInput_disable.proDept = true;
+      } else {
+        this.uploadInput_disable.proCmpy = false;
+        this.uploadInput_disable.proDept = false;
+      }
+      console.log(value);
+    },
+    onChange_step(current) {
+      //改变上传文件步骤函数
+      console.log("onChange:", current);
+      this.current = current;
+    },
     closemodify() {
       this.modalModifyVisible = false;
     },
@@ -842,8 +1115,7 @@ export default {
               "获取目录成功！",
               "Record added successfully！"
             ); */
-
-            this.refreshColumns();
+            //this.refreshColumns();
           } else {
             // this.openNotification(["error"],"添加数据失败！","Add record failed！");
           }
@@ -865,7 +1137,7 @@ export default {
               "Record added successfully！"
             ); */
 
-            this.refreshColumns();
+            //this.refreshColumns();
           } else {
             //this.openNotification(["error"],"添加数据失败！","Add record failed！");
           }
@@ -878,6 +1150,7 @@ export default {
         this.select_director.second != null &&
         this.select_director.second != ""
       ) {
+        //alert("aa");
         this.selectedform.first = this.select_director.first;
         this.selectedform.second = this.select_director.second;
         //this.selectedform.path = '\\'+this.select_director+'\\'+this.select_director.second+'\\'+this.select_director
@@ -891,7 +1164,7 @@ export default {
               "Record added successfully！"
             ); */
 
-            this.refreshColumns();
+            //this.refreshColumns();
           } else {
             //this.openNotification(["error"],"添加数据失败！","Add record failed！");
           }
@@ -1043,10 +1316,7 @@ export default {
 
       let param = new URLSearchParams();
 
-      // var  result = record.path+"\\"+record.name+"."+record.dataFormat
-      //param.append('path',result);
-
-      param.append("path", record.path);
+      param.append("path", record.downUrl);
       param.append("city", record.city);
       param.append("county", record.county);
       param.append("prodecmpy", record.provideCmpy);
@@ -1059,13 +1329,13 @@ export default {
       } else {
         param.append("providept", record.provideDept);
       } */
-      var pathstr = record.path;
-      var pathstrsize = pathstr.size;
-      //var partten= '///';
 
+      //更改成downurl下载
+      /*       var pathstr = record.path;
+      var pathstrsize = pathstr.size;
       var a = pathstr.lastIndexOf("\\");
       var resultstr = pathstr.substring(a + 1, pathstrsize);
-      console.log("---resultstr---" + resultstr);
+      console.log("---resultstr---" + resultstr); */
 
       console.log();
       // 加入到指定路径
@@ -1154,7 +1424,7 @@ export default {
       if (key === "uploadCard") {
         //alert("upload");
         //this.openNotification("success",);
-        this.upload_openNotification();
+        //this.upload_openNotification();
       }
       //  console.log(key, type);
       this[type] = key;

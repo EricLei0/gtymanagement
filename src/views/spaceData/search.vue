@@ -131,16 +131,17 @@
             :scroll="{ x: 3000, y: 600 }"
             rowKey="bsm"
           >
-            <span slot="operation" slot-scope="record">
-              <a
+            <!-- <span slot="operation" slot-scope="record"> -->
+            <span slot="operation">
+              <!--              <a
                 @click="() => setModifyVisible(true, record)"
                 v-if="columnsmodify"
-              >
-                <!-- 默认为true（显示），在created函数判断是否普通用户，如果是，则赋值false(隐藏)-->
-                > 修改
-              </a>
+              > -->
+              <!-- 默认为true（显示），在created函数判断是否普通用户，如果是，则赋值false(隐藏)-->
+              <!--                 > 修改
+               </a> -->
               <a-divider type="vertical" />
-              <a @click="() => setDeleteVisible(true, record)">删除</a>
+              <!--  <a @click="() => setDeleteVisible(true, record)">删除</a> -->
 
               <!-- 新增空间数据弹窗 -->
               <a-modal
@@ -299,7 +300,7 @@ import TitleHeader from "@/components/TitleHeader";
 import Vue from "vue";
 import VueDraggableResizable from "vue-draggable-resizable";
 import inventory from "@/api/inventory";
-import documentdata from "@/api/documentdata";
+//import documentdata from "@/api/documentdata";
 import spacedata from "@/api/spacedata";
 
 Vue.component("vue-draggable-resizable", VueDraggableResizable);
@@ -338,7 +339,7 @@ const columns = [
     sortDirections: ["descend", "ascend"]
   },
   {
-    title: "市县",
+    title: "市",
     dataIndex: "city",
     key: "city",
     className: "column-header",
@@ -349,9 +350,20 @@ const columns = [
     sortDirections: ["descend", "ascend"]
   },
   {
+    title: "县",
+    dataIndex: "county",
+    key: "county",
+    className: "column-header",
+    width: 100,
+    sorter: (a, b) => {
+      return a.county.localeCompare(b.county);
+    },
+    sortDirections: ["descend", "ascend"]
+  },
+  {
     title: "提供单位",
     dataIndex: "provideCmpy",
-    key: "commitmentdept",
+    key: "provideCmpy",
     className: "column-header",
     width: 200,
     sorter: (a, b) => {
@@ -396,7 +408,7 @@ const columns = [
   {
     title: "所属项目",
     dataIndex: "belongItem",
-    key: "owner",
+    key: "belongItem",
     className: "column-header",
     width: 250,
     sorter: (a, b) => {
@@ -407,7 +419,7 @@ const columns = [
   {
     title: "数据格式",
     dataIndex: "dataFormat",
-    key: "owner",
+    key: "dataFormat",
     className: "column-header",
     width: 250,
     sorter: (a, b) => {
@@ -429,7 +441,7 @@ const columns = [
   {
     title: "收集时间",
     dataIndex: "collectTime",
-    key: "datamanger",
+    key: "collectTime",
     className: "column-header",
     width: 130,
     sorter: (a, b) => {
@@ -627,12 +639,12 @@ export default {
         {
           key: 2,
           pName: "city",
-          pLabel: "市县"
+          pLabel: "市"
         },
         {
           key: 3,
-          pName: "belongItem",
-          pLabel: "所属项目"
+          pName: "county",
+          pLabel: "县"
         },
         {
           key: 4,
@@ -868,14 +880,14 @@ export default {
           page: this.queryParaSingle.pageNum,
           rows: this.queryParaSingle.pageSize
         };
-        await documentdata.search(datas).then(response => {
+        await spacedata.search(datas).then(response => {
           this.data = response.data.rows;
           this.pagination.total = response.data.total;
         });
       } else {
         datas["page"] = this.queryParaSingle.pageNum;
         datas["rows"] = this.queryParaSingle.pageSize;
-        await documentdata.search(datas).then(response => {
+        await spacedata.search(datas).then(response => {
           this.data = response.data.rows;
           this.pagination.total = response.data.total;
         });

@@ -27,6 +27,17 @@ export default {
     });
   },
 
+  getcityandcounty(parameter) {
+    return request({
+      url: "/getCityAndCounty/list",
+      method: "post",
+      header: {
+        "Content-Type": "application/json"
+      },
+      params: parameter
+    });
+  },
+
   add(parameter) {
     return request({
       url: "/documenData/add",
